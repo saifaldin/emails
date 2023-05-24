@@ -75,7 +75,7 @@ export class EmailsService {
     try {
       const { email } = inboxDto;
       const emailsList = await this.emailsModel
-        .find({ receiver: email }, 'subject')
+        .find({ receiver: email }, 'subject createdAt sender')
         .lean();
       return emailsList;
     } catch (error) {

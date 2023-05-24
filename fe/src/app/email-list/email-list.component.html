@@ -1,0 +1,10 @@
+<div>
+  <h2>Inbox</h2>
+  <ul class="email-list">
+    <li *ngFor="let email of emails" class="email-item" [routerLink]="['/email', email._id]">
+      <a class="email-subject">{{ email.subject }}</a>
+      <p class="email-sender">From: {{email.sender}}</p>
+      <p class="email-date">Date: {{email.date}}</p>
+    </li>
+  </ul>
+</div>

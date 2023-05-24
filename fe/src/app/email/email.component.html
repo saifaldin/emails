@@ -1,0 +1,16 @@
+<section class="email-details" *ngIf="emailDetails">
+  <h2>{{ emailDetails.subject }}</h2>
+  <p>From: {{ emailDetails.sender }}</p>
+  <p>Date: {{ emailDetails.date }}</p>
+  <hr>
+  <p>{{ emailDetails.body }}</p>
+
+  <div class="email-reply">
+    <h3>Reply to Email</h3>
+    <textarea [(ngModel)]="replyMessage"></textarea>
+    <button (click)="replyToEmail()">Reply</button>
+  </div>
+  <div class="reply-success-flag" *ngIf="replySent">
+    <p class="reply-success">Reply Sent!</p>
+  </div>
+</section>
