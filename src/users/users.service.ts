@@ -9,12 +9,13 @@ export class UsersService {
   constructor(@InjectModel(Users.name) private usersModel: Model<Users>) {}
 
   async login(loginDto: LoginDto) {
-    const foundUser: UsersDocument = await this.usersModel
-      .findOne({ email: loginDto.email, password: loginDto.password })
-      .lean();
-    if (!foundUser) {
-      return 'User not found';
+    try {
+      const foundUser: UsersDocument = await this.usersModel
+        .findOne({ email: loginDto.email, password: loginDto.password })
+        .lean();
+      return foundUser && foundUser.email;
+    } catch (error) {
+      return 'Unexepected Error';
     }
-    return foundUser.email;
   }
 }

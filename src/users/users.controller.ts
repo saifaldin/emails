@@ -18,8 +18,9 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
     const result = await this.UsersService.login(loginDto);
-    if (result === 'User not found') {
+    if (!result) {
       res.status(HttpStatus.NOT_FOUND).send(result);
+      return result;
     }
     res.send(result);
     return result;
