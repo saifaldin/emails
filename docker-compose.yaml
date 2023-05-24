@@ -1,11 +1,32 @@
 version: '3.8'
 services:
+  localstack:
+    image: localstack/localstack
+    ports:
+      - 4566:4566
+
   mongodb:
     image: mongo:6
     ports:
-      - "27017:27017"
+      - 27017:27017
 
   mongo-seed:
     build: ./seed
     depends_on:
       - mongodb
+  
+  be:
+    build: ./be
+    depends_on:
+      - mongo-seed
+    ports:
+      - 3000:3000
+    environment: 
+      - MONGODB_HOST=mongodb://mongodb:27017/emailer
+
+  fe:
+    build: ./fe
+    depends_on:
+      - be
+    ports:
+      - 4200:80
