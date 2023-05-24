@@ -1,17 +1,21 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import * as AWS_SES from '@aws-sdk/client-ses';
-import * as AWS_S3 from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
 import { ReplyDto } from './dto/reply.dto';
 import { UsersService } from 'src/users/users.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Emails } from './entities/emails.schema';
+import { Model } from 'mongoose';
+import { InboxDto } from './dto/inbox.dto';
+import { EmailDetailsDto } from './dto/email-details.dto';
 
 @Injectable()
 export class EmailsService {
   private readonly sesClient: AWS_SES.SES;
-  private readonly s3Client: AWS_S3.S3;
 
   constructor(
-    private configService: ConfigService,
+    @InjectModel(Emails.name) private emailsModel: Model<Emails>,
+    private readonly configService: ConfigService,
     private readonly usersService: UsersService,
   ) {
     const awsConfigs = {
@@ -23,12 +27,11 @@ export class EmailsService {
       },
     };
     this.sesClient = new AWS_SES.SES(awsConfigs);
-    this.s3Client = new AWS_S3.S3({ ...awsConfigs, forcePathStyle: true });
   }
 
   async reply(replyDto: ReplyDto) {
-    const { email, password, destination, subject, body } = replyDto;
     try {
+      const { email, password, destination, subject, body } = replyDto;
       const user = await this.usersService.login({ email, password });
       if (!user) {
         return 'User not found';
@@ -68,12 +71,23 @@ export class EmailsService {
     }
   }
 
-  async inbox() {
+  async inbox(inboxDto: InboxDto) {
     try {
-      const res = await this.s3Client.listObjects({
-        Bucket: 'email-gmail.com',
-      });
-      return res;
+      const { email } = inboxDto;
+      const emailsList = await this.emailsModel
+        .find({ receiver: email }, 'subject')
+        .lean();
+      return emailsList;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async emailDetails(emailDetailsDto: EmailDetailsDto) {
+    try {
+      const { _id } = emailDetailsDto;
+      const emailsList = await this.emailsModel.findOne({ _id }).lean();
+      return emailsList;
     } catch (error) {
       return error;
     }

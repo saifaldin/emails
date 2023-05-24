@@ -1,7 +1,18 @@
-import { Body, Controller, Get, HttpStatus, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { EmailsService } from './emails.service';
 import { ReplyDto } from './dto/reply.dto';
 import { Response } from 'express';
+import { InboxDto } from './dto/inbox.dto';
+import { EmailDetailsDto } from './dto/email-details.dto';
 
 @Controller('emails')
 export class EmailsController {
@@ -19,7 +30,12 @@ export class EmailsController {
   }
 
   @Get()
-  inbox() {
-    return this.EmailsService.inbox();
+  inbox(@Query() inboxDto: InboxDto) {
+    return this.EmailsService.inbox(inboxDto);
+  }
+
+  @Get('/:_id')
+  emailDetails(@Param() emailDetailsDto: EmailDetailsDto) {
+    return this.EmailsService.emailDetails(emailDetailsDto);
   }
 }

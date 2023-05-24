@@ -13,6 +13,9 @@ export class Emails {
 
   @Prop({ required: true, trim: true })
   body: string;
+
+  @Prop({ required: true, trim: true })
+  subject: string;
 }
 
 export const EmailsSchema = SchemaFactory.createForClass(Emails);
